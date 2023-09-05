@@ -69,6 +69,21 @@ extern sr04_t sr04;
 /* USER CODE END EV */
 ```
 
+Increase the update count in timer interrupt callback function. This is used to calibrate the distance.
+
+```c
+void TIM1_UP_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_IRQn 0 */
+  sr04.tim_update_count++;
+  /* USER CODE END TIM1_UP_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  /* USER CODE BEGIN TIM1_UP_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_IRQn 1 */
+}
+```
+
 Read the distance in timer interrupt callback function.
 
 ```c

@@ -17,6 +17,7 @@ typedef struct {
     uint16_t echo_channel;  // Echo pin timer channel
     uint8_t capture_flag;  // Echo pin capture flag
     uint32_t distance;  // Distance in mm
+    uint16_t tim_update_count;  // Timer update count
 } sr04_t;
 
 // HC-SR04 functions
