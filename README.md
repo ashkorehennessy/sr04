@@ -75,7 +75,14 @@ Increase the update count in timer interrupt callback function. This is used to 
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-  sr04.tim_update_count++;
+  // Update interrupt handling
+  if (__HAL_TIM_GET_FLAG(sr04.echo_htim, TIM_FLAG_UPDATE) != RESET)
+  {
+      if (__HAL_TIM_GET_IT_SOURCE(sr04.echo_htim, TIM_IT_UPDATE) != RESET)
+      {
+          sr04.tim_update_count++;
+      }
+  }
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
@@ -84,13 +91,22 @@ void TIM1_UP_IRQHandler(void)
 }
 ```
 
+Replace ```TIM_FLAG_CC1``` and ```TIM_IT_CC1``` to actual capture channel number.
+
 Read the distance in timer interrupt callback function.
 
 ```c
 void TIM1_CC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_CC_IRQn 0 */
-  sr04_read_distance(&sr04);
+  // Capture interrupt handling
+  if (__HAL_TIM_GET_FLAG(&htim1, TIM_FLAG_CC1) != RESET)
+  {
+      if (__HAL_TIM_GET_IT_SOURCE(&htim1, TIM_IT_CC1) != RESET)
+      {
+          sr04_read_distance(&sr04);
+      }
+  }
   /* USER CODE END TIM1_CC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_CC_IRQn 1 */
@@ -100,3 +116,79 @@ void TIM1_CC_IRQHandler(void)
 ```
 
 The distance will be stored in sr04.distance variable, the unit is mm.
+
+---
+
+General purpose timer version:
+
+```c
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+  // Capture interrupt handling
+  if (__HAL_TIM_GET_FLAG(&htim4, TIM_FLAG_CC1) != RESET)
+  {
+      if (__HAL_TIM_GET_IT_SOURCE(&htim4, TIM_IT_CC1) != RESET)
+      {
+          sr04_read_distance(&sr04);
+      }
+  }
+  // Update interrupt handling
+  if (__HAL_TIM_GET_FLAG(&htim4, TIM_FLAG_UPDATE) != RESET)
+  {
+      if (__HAL_TIM_GET_IT_SOURCE(&htim4, TIM_IT_UPDATE) != RESET)
+      {
+          sr04.tim_update_count++;
+      }
+  }
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+```
+
+## Multiple sensor instances
+
+You can use multiple sensor instances by declaring and configuring multiple sensor structs.
+
+Interrupt callback function:
+
+```c
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+    // Capture interrupt handling
+    if (__HAL_TIM_GET_FLAG(&htim4, TIM_FLAG_CC1) != RESET)
+    {
+        if (__HAL_TIM_GET_IT_SOURCE(&htim4, TIM_IT_CC1) != RESET)
+        {
+            sr04_read_distance(&sr04_1);
+        }
+    }
+    if (__HAL_TIM_GET_FLAG(&htim4, TIM_FLAG_CC2) != RESET)
+    {
+        if (__HAL_TIM_GET_IT_SOURCE(&htim4, TIM_IT_CC2) != RESET)
+        {
+            sr04_read_distance(&sr04_2);
+        }
+    }
+    // Update interrupt handling
+    if (__HAL_TIM_GET_FLAG(&htim4, TIM_FLAG_UPDATE) != RESET)
+    {
+        if (__HAL_TIM_GET_IT_SOURCE(&htim4, TIM_IT_UPDATE) != RESET)
+        {
+            sr04_1.tim_update_count++;
+            sr04_2.tim_update_count++;
+        }
+    }
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+```
+
+
