@@ -25,20 +25,18 @@ void sr04_trigger(sr04_t *sr04_struct){
 
 void sr04_read_distance(sr04_t *sr04_struct){
   // This function should be called in the timer input capture callback
-  static uint32_t start_counter;
-  static uint32_t end_counter;
   switch (sr04_struct->capture_flag){
     case 0:
-      start_counter = __HAL_TIM_GET_COUNTER(sr04_struct->echo_htim);
+      sr04_struct->start_counter = __HAL_TIM_GET_COUNTER(sr04_struct->echo_htim);
       sr04_struct->capture_flag = 1;
       sr04_struct->tim_update_count = 0;
       __HAL_TIM_SET_CAPTUREPOLARITY(sr04_struct->echo_htim, sr04_struct->echo_channel, TIM_INPUTCHANNELPOLARITY_FALLING);
       break;
     case 1:
-      end_counter = __HAL_TIM_GET_COUNTER(sr04_struct->echo_htim) + sr04_struct->tim_update_count * sr04_struct->echo_htim->Init.Period;
+      sr04_struct->end_counter = __HAL_TIM_GET_COUNTER(sr04_struct->echo_htim) + sr04_struct->tim_update_count * sr04_struct->echo_htim->Init.Period;
       sr04_struct->capture_flag = 0;
       // Calculate distance in mm
-      sr04_struct->distance = (end_counter - start_counter) * 340 / (SystemCoreClock / 1000000) / 2 / (1000 / sr04_struct->echo_htim->Init.Prescaler);
+      sr04_struct->distance = (sr04_struct->end_counter - sr04_struct->start_counter) * 340 / (SystemCoreClock / 1000000) / 2 / (1000 / sr04_struct->echo_htim->Init.Prescaler);
       __HAL_TIM_SET_CAPTUREPOLARITY(sr04_struct->echo_htim, sr04_struct->echo_channel, TIM_INPUTCHANNELPOLARITY_RISING);
       break;
   }

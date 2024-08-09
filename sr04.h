@@ -15,6 +15,8 @@ typedef struct {
     TIM_HandleTypeDef *echo_htim;  // Echo pin timer
     uint16_t echo_channel;  // Echo pin timer channel
     uint8_t capture_flag;  // Echo pin capture flag
+    uint32_t start_counter;  // Counter value at rising edge
+    uint32_t end_counter;  // Counter value at falling edge
     uint32_t distance;  // Distance in mm
     uint16_t tim_update_count;  // Timer update count
 } sr04_t;
