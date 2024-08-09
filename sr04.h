@@ -18,6 +18,7 @@ typedef struct {
     uint32_t start_counter;  // Counter value at rising edge
     uint32_t end_counter;  // Counter value at falling edge
     uint32_t distance;  // Distance in mm
+    uint32_t last_distance;  // Last distance
     uint16_t tim_update_count;  // Timer update count
 } sr04_t;
 

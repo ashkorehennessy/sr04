@@ -3,6 +3,7 @@
 //
 
 #include "sr04.h"
+#define DISTANCE_LIMIT 5000
 
 void sr04_init(sr04_t *sr04_struct){
   // Enable trigger pin
@@ -37,6 +38,11 @@ void sr04_read_distance(sr04_t *sr04_struct){
       sr04_struct->capture_flag = 0;
       // Calculate distance in mm
       sr04_struct->distance = (sr04_struct->end_counter - sr04_struct->start_counter) * 340 / (SystemCoreClock / 1000000) / 2 / (1000 / sr04_struct->echo_htim->Init.Prescaler);
+      // Distance limit
+      if(sr04_struct->distance > DISTANCE_LIMIT){
+        sr04_struct->distance = sr04_struct->last_distance;
+      }
+      sr04_struct->last_distance = sr04_struct->distance;
       __HAL_TIM_SET_CAPTUREPOLARITY(sr04_struct->echo_htim, sr04_struct->echo_channel, TIM_INPUTCHANNELPOLARITY_RISING);
       break;
   }
