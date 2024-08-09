@@ -2,12 +2,11 @@
 // Created by ashkore on 23-9-2.
 //
 
-#include "stm32f1xx_hal.h"
 
 #ifndef SR04_SR04_H
 #define SR04_SR04_H
 
-#endif //SR04_SR04_H
+#include "stm32f1xx_hal.h"
 
 // HC-SR04 struct
 typedef struct {
@@ -21,6 +20,8 @@ typedef struct {
 } sr04_t;
 
 // HC-SR04 functions
-void sr04_init(sr04_t *sr04);
-void sr04_trigger(sr04_t *sr04);
-void sr04_read_distance(sr04_t *sr04);  // This function should be called in the timer input capture callback
+void sr04_init(sr04_t *sr04_struct);
+void sr04_trigger(sr04_t *sr04_struct);
+void sr04_read_distance(sr04_t *sr04_struct);  // This function should be called in the timer input capture callback
+
+#endif //SR04_SR04_H
